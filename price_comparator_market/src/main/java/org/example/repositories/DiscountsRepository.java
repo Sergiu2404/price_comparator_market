@@ -35,7 +35,7 @@ public class DiscountsRepository {
                 for (Path filePath : stream) {
                     if (Files.isRegularFile(filePath)) {
                         List<Discount> fileDiscounts = discountCSVParser.parse(filePath);
-                        this.discounts.addAll(fileDiscounts);
+                        discounts.addAll(fileDiscounts);
                     }
                 }
             }

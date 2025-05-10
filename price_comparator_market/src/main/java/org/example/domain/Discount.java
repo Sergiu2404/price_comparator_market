@@ -1,5 +1,6 @@
 package org.example.domain;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Discount {
@@ -65,5 +66,10 @@ public class Discount {
 
     public void setFileDate(Date fileDate) {
         this.fileDate = fileDate;
+    }
+
+    public String toString(){
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        return "Discount: " + simpleDateFormat.format(this.getFromDate()) + " --> " + simpleDateFormat.format(this.getToDate()) + ", " + this.getPercentageOfDiscount() + "%, " + this.getDiscountStore() + ", " + simpleDateFormat.format(this.getFileDate());
     }
 }
