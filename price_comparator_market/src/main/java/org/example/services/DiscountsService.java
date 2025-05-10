@@ -8,10 +8,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -57,5 +54,31 @@ public class DiscountsService {
                     return ( !today.isBefore(fromDate) && !today.isAfter(toDate) );
                 })
                 .collect(Collectors.toList());
+    }
+
+    public List<Discount> getHighestDiscountPercentageForEachStore(){
+        Map<String, Double> maxDiscountPerStore = new HashMap<>();
+        List<Discount> availableDiscounts = this.getAllAvailableDiscounts();
+
+        for(Discount discount : availableDiscounts){
+            String store = discount.getDiscountStore();
+            double percentage = discount.getPercentageOfDiscount();
+
+            if(!maxDiscountPerStore.containsKey(store) || percentage > maxDiscountPerStore.get(store)){
+                maxDiscountPerStore.put(store, percentage);
+            }
+        }
+
+        List<Discount> highestAvailableDiscounts = new ArrayList<>();
+        for(Map.Entry<String, Double> entry : maxDiscountPerStore.entrySet()){
+            String store = entry.getKey();
+            double maxDiscount = entry.getValue();
+
+            availableDiscounts.stream()
+                    .filter(discount -> discount.getDiscountStore().equals(store) && discount.getPercentageOfDiscount() == maxDiscount)
+                    .forEach(highestAvailableDiscounts::add);
+        }
+
+        return highestAvailableDiscounts;
     }
 }

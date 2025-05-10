@@ -43,7 +43,7 @@ public class UI {
         System.out.println("---------------------------< MENU >---------------------------");
         System.out.println("1. Get optimized shopping list");
         System.out.println("2. Get list of products with highest discounts across all tracked stores");
-        System.out.println("3. Find discounts newly announced / posted (24 hours)");
+        System.out.println("3. Find discounts newly announced / posted (today)");
         System.out.println("4. Get price history data points for given product name (filterable data)");
         System.out.println("5. Highlight val / unit to identify best buys (even if pack size differs)");
         System.out.println("6. Set target price alert for product name");
@@ -101,7 +101,8 @@ public class UI {
                     break;
 
                 case "2":
-                    System.out.println("highest discounts");
+                    viewHighestAvailableDiscounts();
+                    //System.out.println("highest discounts");
                     break;
 
                 case "3":
@@ -184,6 +185,13 @@ public class UI {
 
     private void viewAllAvailableDiscounts(){
         for(Discount discount : this.discountsService.getAllAvailableDiscounts())
+        {
+            System.out.println(String.format("Product: %s, %s", discount.getProduct().toString(), discount.toString()));
+        }
+    }
+
+    private void viewHighestAvailableDiscounts(){
+        for(Discount discount : this.discountsService.getHighestDiscountPercentageForEachStore())
         {
             System.out.println(String.format("Product: %s, %s", discount.getProduct().toString(), discount.toString()));
         }
