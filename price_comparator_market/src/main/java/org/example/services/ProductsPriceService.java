@@ -2,6 +2,7 @@ package org.example.services;
 
 import org.example.domain.PriceEntry;
 import org.example.domain.Product;
+import org.example.helpers.SubstringPriceEntryStrategy;
 import org.example.repositories.ProductsPricesRepository;
 
 import java.io.IOException;
@@ -25,7 +26,7 @@ public class ProductsPriceService {
         return this.productPricesRepository.getAllPriceEntries();
     }
 
-    public List<PriceEntry> getAllProductsByName(String productName){
+    public List<PriceEntry> getAllPriceEntriesByName(String productName){
         return this.getAllPriceEntries().stream()
                 .filter(entry -> entry.getProduct().getName().equalsIgnoreCase(productName))
                 .collect(Collectors.toList());
@@ -46,6 +47,16 @@ public class ProductsPriceService {
     public List<Product> getAllSortedProductsById(){
         return this.getAllProducts().stream()
                 .sorted(Comparator.comparing(Product::getId))
+                .collect(Collectors.toList());
+    }
+
+    public List<PriceEntry> getPriceEntriesByProductNameAndCategory(String productName, String productCategory)
+    {
+        List<PriceEntry> allPriceEntries = this.productPricesRepository.getAllPriceEntries();
+        SubstringPriceEntryStrategy filterStrategy = new SubstringPriceEntryStrategy(productName, productCategory);
+
+        return allPriceEntries.stream()
+                .filter(filterStrategy::matches)
                 .collect(Collectors.toList());
     }
 }

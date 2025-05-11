@@ -1,6 +1,8 @@
 package org.example.services;
 
 import org.example.domain.Discount;
+import org.example.helpers.DiscountAvailabilityFilter;
+import org.example.helpers.DiscountFilterStrategy;
 import org.example.repositories.DiscountsRepository;
 
 import java.io.IOException;
@@ -14,10 +16,13 @@ import java.util.stream.Collectors;
 
 public class DiscountsService {
     private static final int HOURS_IN_A_DAY = 24;
+
     private final DiscountsRepository discountsRepository;
+    private final DiscountFilterStrategy discountFilterStrategy;
 
     public DiscountsService(DiscountsRepository discountsRepository){
         this.discountsRepository = discountsRepository;
+        this.discountFilterStrategy = new DiscountAvailabilityFilter();
     }
 
     public void loadDiscounts() throws IOException {
@@ -39,26 +44,15 @@ public class DiscountsService {
                 .collect(Collectors.toList());
     }
 
-    public List<Discount> getAllAvailableDiscounts() {
-        LocalDate today = LocalDate.now();
-
+    public List<Discount> getAllFilteredDiscountsByAvailability() {
         return this.getAllDiscounts().stream()
-                .filter(discount -> {
-                    LocalDate fromDate = discount.getFromDate().toInstant()
-                            .atZone(ZoneId.systemDefault())
-                            .toLocalDate();
-                    LocalDate toDate = discount.getToDate().toInstant()
-                            .atZone(ZoneId.systemDefault())
-                            .toLocalDate();
-
-                    return ( !today.isBefore(fromDate) && !today.isAfter(toDate) );
-                })
+                .filter(discountFilterStrategy::filter)
                 .collect(Collectors.toList());
     }
 
     public List<Discount> getHighestDiscountPercentageForEachStore(){
         Map<String, Double> maxDiscountPerStore = new HashMap<>();
-        List<Discount> availableDiscounts = this.getAllAvailableDiscounts();
+        List<Discount> availableDiscounts = this.getAllFilteredDiscountsByAvailability();
 
         for(Discount discount : availableDiscounts){
             String store = discount.getDiscountStore();

@@ -1,9 +1,9 @@
 product_id;product_name;brand;package_quantity;package_unit;product_category;from_date;to_date;percentage_of_discount
-P004;iaurt grecesc;Proxi;0.4;kg;lactate;2025-05-10;2025-05-16;9
-P007;ouă mărimea M;Din Ogradă;10;buc;ouă;2025-05-11;2025-05-17;10
-P024;apă plată;Aqua Carpatica;2;l;băuturi;2025-05-12;2025-05-18;7
-P030;ulei floarea-soarelui;Spornic;1;l;alimente de bază;2025-05-10;2025-05-15;6
-P039;detergent lichid;Dero;2.5;l;produse de menaj;2025-05-13;2025-05-19;18
-P045;hârtie igienică 3 straturi;Motto;10;role;produse de menaj;2025-05-14;2025-05-20;12
-P067;orez bob lung;Deroni;1;kg;alimente de bază;2025-05-15;2025-05-21;8
-P070;bere blondă;Ursus;0.5;l;băuturi;2025-05-12;2025-05-18;6
+P073;iaurt grecesc;Proxi;0.4;kg;lactate;2025-05-10;2025-05-16;9
+P079;ouă mărimea M;Din Ogradă;10;buc;ouă;2025-05-11;2025-05-17;10
+P082;apă plată;Aqua Carpatica;2;l;băuturi;2025-05-12;2025-05-18;7
+P074;ulei floarea-soarelui;Spornic;1;l;alimente de bază;2025-05-10;2025-05-15;6
+P087;detergent lichid;Dero;2.5;l;produse de menaj;2025-05-13;2025-05-19;18
+P068;hârtie igienică 3 straturi;Motto;10;role;produse de menaj;2025-05-14;2025-05-20;12
+P095;orez bob lung;Deroni;1;kg;alimente de bază;2025-05-15;2025-05-21;8
+P071;bere blondă;Ursus;0.5;l;băuturi;2025-05-12;2025-05-18;6
