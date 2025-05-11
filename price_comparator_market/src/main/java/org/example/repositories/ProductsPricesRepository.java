@@ -17,47 +17,32 @@ public class ProductsPricesRepository {
     private List<PriceEntry> priceEntries;
     private List<Product> products;
     private static final String DATA_DIR = "data_files";
+    private final PriceCSVParser priceCSVParser;
 
-//    public void loadPriceEntries() throws IOException {
-//        PriceCSVParser priceCSVParser = new PriceCSVParser();
-//        List<PriceEntry> loadedEntries = new ArrayList<>();
-//
-//        try {
-//            URL resourceUrl = getClass().getClassLoader().getResource(DATA_DIR);
-//            if (resourceUrl == null) {
-//                throw new IOException("data_files folder not found in resources");
-//            }
-//
-//            Path folderPath = Paths.get((resourceUrl.toURI()));
-//
-//            try (DirectoryStream<Path> stream = Files.newDirectoryStream(folderPath)) {
-//                for (Path filePath : stream) {
-//                    if (Files.isRegularFile(filePath)) {
-//                        List<PriceEntry> fileEntries = priceCSVParser.parse(filePath);
-//                        loadedEntries.addAll(fileEntries);
-//                    }
-//                }
-//            }
-//
-//        } catch (URISyntaxException e) {
-//            throw new IOException("Invalid URI for data_files directory", e);
-//        }
-//
-//        this.priceEntries = loadedEntries;
-//        this.
-//    }
+    public ProductsPricesRepository() {
+        this(new PriceCSVParser());
+    }
+
+    public ProductsPricesRepository(PriceCSVParser priceCSVParser) {
+        this.priceCSVParser = priceCSVParser;
+        this.priceEntries = new ArrayList<>();
+        this.products = new ArrayList<>();
+    }
+
+    public URL getResourceUrl() throws IOException {
+        URL resourceUrl = getClass().getClassLoader().getResource(DATA_DIR);
+        if (resourceUrl == null) {
+            throw new IOException("data_files folder not found in resources");
+        }
+        return resourceUrl;
+    }
 
     public void loadProductPrices() throws IOException {
-        PriceCSVParser priceCSVParser = new PriceCSVParser();
         Set<PriceEntry> uniquePriceEntriesSet = new HashSet<>();
         Map<String, Product> productMap = new HashMap<>();
 
         try {
-            URL resourceUrl = getClass().getClassLoader().getResource(DATA_DIR);
-            if (resourceUrl == null) {
-                throw new IOException("data_files folder not found in resources");
-            }
-
+            URL resourceUrl = getResourceUrl();
             Path folderPath = Paths.get(resourceUrl.toURI());
 
             try (DirectoryStream<Path> stream = Files.newDirectoryStream(folderPath)) {
@@ -68,7 +53,7 @@ public class ProductsPricesRepository {
                             uniquePriceEntriesSet.add(entry);
 
                             Product product = entry.getProduct();
-                            productMap.putIfAbsent(product.getId(), product); // ensures uniqueness by product ID
+                            productMap.putIfAbsent(product.getId(), product);
                         }
                     }
                 }
@@ -81,7 +66,6 @@ public class ProductsPricesRepository {
         this.priceEntries = new ArrayList<>(uniquePriceEntriesSet);
         this.products = new ArrayList<>(productMap.values());
     }
-
 
     public List<PriceEntry> getAllPriceEntries() {
         return this.priceEntries;

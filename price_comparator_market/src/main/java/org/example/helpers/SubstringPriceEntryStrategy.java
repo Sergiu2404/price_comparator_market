@@ -14,9 +14,9 @@ public class SubstringPriceEntryStrategy implements PriceEntryFilterStrategy {
     @Override
     public boolean matches(PriceEntry entry) {
         boolean matchesName = nameSubstring.isEmpty() ||
-                entry.getProduct().getName().toLowerCase().contains(nameSubstring);
+                entry.getProduct().getName().toLowerCase().contains(nameSubstring.toLowerCase());
         boolean matchesCategory = categorySubstring.isEmpty() ||
-                entry.getProduct().getCategory().toLowerCase().contains(categorySubstring);
+                entry.getProduct().getCategory().toLowerCase().contains(categorySubstring.toLowerCase());
 
         return matchesName && matchesCategory;
     }

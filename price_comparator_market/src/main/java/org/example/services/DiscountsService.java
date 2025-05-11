@@ -7,15 +7,12 @@ import org.example.repositories.DiscountsRepository;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
 
 public class DiscountsService {
-    private static final int HOURS_IN_A_DAY = 24;
 
     private final DiscountsRepository discountsRepository;
     private final DiscountFilterStrategy discountFilterStrategy;

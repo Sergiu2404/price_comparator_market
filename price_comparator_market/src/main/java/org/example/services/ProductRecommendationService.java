@@ -3,7 +3,6 @@ package org.example.services;
 import org.example.data_transfer_objects.ProductPriceWithDiscountInfo;
 import org.example.domain.Discount;
 import org.example.domain.PriceEntry;
-import org.example.domain.Product;
 import org.example.helpers.UnitPriceCalculator;
 
 import java.util.ArrayList;
@@ -14,11 +13,9 @@ import java.util.stream.Collectors;
 
 public class ProductRecommendationService {
     private final DiscountsService discountsService;
-    private final ProductsPriceService productsPriceService;
 
-    public ProductRecommendationService(DiscountsService discountsService, ProductsPriceService productsPriceService) {
+    public ProductRecommendationService(DiscountsService discountsService) {
         this.discountsService = discountsService;
-        this.productsPriceService = productsPriceService;
     }
 
     public List<ProductPriceWithDiscountInfo> getPriceInfoWithDiscounts(List<PriceEntry> priceEntries) {
@@ -41,7 +38,6 @@ public class ProductRecommendationService {
             String currency = entry.getCurrency();
             double quantity = entry.getProduct().getQuantity();
             String unit = entry.getProduct().getUnit();
-
 
             Discount discount = discountsMap.get(productId);
 

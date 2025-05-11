@@ -1,17 +1,15 @@
 package org.example.data_transfer_objects;
 
-import org.example.helpers.UnitPriceCalculator;
-
 public class ProductPriceWithDiscountInfo {
-    private String productId;
-    private String productName;
-    private String store;
-    private double originalPrice;
+    private final String productId;
+    private final String productName;
+    private final String store;
+    private final double originalPrice;
     private String currency;
-    private double discountPercentage; // can be null if no discount
-    private double finalPrice;
-    private double quantity;
-    private String unit;
+    private final double discountPercentage;
+    private final double finalPrice;
+    private final double quantity;
+    private final String unit;
     private double pricePerUnit;
 
     public ProductPriceWithDiscountInfo(String productId, String productName, String store, double originalPrice, String currency, double discountPercentage, double finalPrice, double quantity, String unit, double pricePerUnit) {
@@ -35,24 +33,12 @@ public class ProductPriceWithDiscountInfo {
         return productName;
     }
 
-    public void setProductName(String productName) {
-        this.productName = productName;
-    }
-
     public String getStore() {
         return store;
     }
 
-    public void setStore(String store) {
-        this.store = store;
-    }
-
     public double getOriginalPrice() {
         return originalPrice;
-    }
-
-    public void setOriginalPrice(double originalPrice) {
-        this.originalPrice = originalPrice;
     }
 
     public String getCurrency() {
@@ -67,32 +53,16 @@ public class ProductPriceWithDiscountInfo {
         return finalPrice;
     }
 
-    public void setFinalPrice(double finalPrice) {
-        this.finalPrice = finalPrice;
-    }
-
     public double getDiscountPercentage() {
         return discountPercentage;
-    }
-
-    public void setDiscountPercentage(double discountPercentage) {
-        this.discountPercentage = discountPercentage;
     }
 
     public double getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(double quantity) {
-        this.quantity = quantity;
-    }
-
     public String getUnit() {
         return unit;
-    }
-
-    public void setUnit(String unit) {
-        this.unit = unit;
     }
 
     public double getPricePerUnit() {

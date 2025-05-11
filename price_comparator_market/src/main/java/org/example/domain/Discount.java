@@ -11,6 +11,8 @@ public class Discount {
     private String discountStore;
     private Date fileDate;
 
+    public Discount(){}
+
     public Discount(Product product, Date fromDate, Date toDate, double percentageOfDiscount, String discountStore, Date fileDate){
         this.product = product;
         this.fromDate = fromDate;

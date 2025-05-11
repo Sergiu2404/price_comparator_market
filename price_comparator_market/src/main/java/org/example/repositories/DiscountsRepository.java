@@ -1,10 +1,7 @@
 package org.example.repositories;
 
 import org.example.domain.Discount;
-import org.example.domain.PriceEntry;
-import org.example.domain.Product;
 import org.example.utils.DiscountCSVParser;
-import org.example.utils.PriceCSVParser;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -17,18 +14,31 @@ import java.util.*;
 
 public class DiscountsRepository {
     private List<Discount> discounts;
+    private final DiscountCSVParser discountCSVParser;
     private static final String DATA_DIR = "data_files\\discounts";
 
+    public DiscountsRepository() {
+        this(new DiscountCSVParser());
+    }
+
+    public DiscountsRepository(DiscountCSVParser discountCSVParser) {
+        this.discountCSVParser = discountCSVParser;
+        this.discounts = new ArrayList<>();
+    }
+
+    public URL getResourceUrl() throws IOException {
+        URL resourceUrl = getClass().getClassLoader().getResource(DATA_DIR);
+        if (resourceUrl == null) {
+            throw new IOException(String.format("%s folder not found in resources", DATA_DIR));
+        }
+        return resourceUrl;
+    }
+
     public void loadDiscounts() throws IOException {
-        DiscountCSVParser discountCSVParser = new DiscountCSVParser();
         List<Discount> discounts = new ArrayList<>();
 
         try {
-            URL resourceUrl = getClass().getClassLoader().getResource(DATA_DIR);
-            if (resourceUrl == null) {
-                throw new IOException(String.format("%s folder not found in resources", DATA_DIR));
-            }
-
+            URL resourceUrl = getResourceUrl();
             Path folderPath = Paths.get(resourceUrl.toURI());
 
             try (DirectoryStream<Path> stream = Files.newDirectoryStream(folderPath)) {
@@ -50,5 +60,7 @@ public class DiscountsRepository {
         this.discounts = new ArrayList<>(discounts);
     }
 
-    public List<Discount> getAllDiscounts(){return this.discounts;}
+    public List<Discount> getAllDiscounts() {
+        return this.discounts;
+    }
 }

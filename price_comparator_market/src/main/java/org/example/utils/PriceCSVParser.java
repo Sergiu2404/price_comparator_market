@@ -14,7 +14,6 @@ import java.util.List;
 public class PriceCSVParser {
     public List<PriceEntry> parse(Path path) throws IOException {
         List<PriceEntry> entries = new ArrayList<>();
-        List<Product> products = new ArrayList<>();
 
         String fileName = path.getFileName().toString();
         String store = extractStoreName(fileName);
@@ -45,7 +44,7 @@ public class PriceCSVParser {
     }
 
     private String extractStoreName(String filename) {
-        return filename.split("_")[0]; // e.g., kaufland_2025-05-01.csv
+        return filename.split("_")[0];
     }
 
     private LocalDate extractDate(String filename) {

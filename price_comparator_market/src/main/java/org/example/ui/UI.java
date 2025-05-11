@@ -2,35 +2,33 @@ package org.example.ui;
 
 import org.example.data_transfer_objects.ProductPriceWithDiscountInfo;
 import org.example.domain.Discount;
-import org.example.domain.PriceAlert;
 import org.example.domain.PriceEntry;
 import org.example.domain.Product;
 import org.example.helpers.UnitPriceCalculator;
+import org.example.services.DailyShoppingBasketService;
 import org.example.services.DiscountsService;
-import org.example.services.PriceAlertService;
 import org.example.services.ProductRecommendationService;
 import org.example.services.ProductsPriceService;
 
 import java.io.IOException;
-import java.util.Comparator;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
-import java.util.stream.Collectors;
 
 public class UI {
     private final ProductsPriceService productsPriceService;
     private final DiscountsService discountsService;
     private final ProductRecommendationService productRecommendationService;
-    private final PriceAlertService priceAlertService;
+    private final DailyShoppingBasketService dailyShoppingBasketService;
     Scanner scanner;
 
 
-    public UI(ProductsPriceService productsPriceService, DiscountsService discountsService, ProductRecommendationService productRecommendationService, PriceAlertService priceAlertService){
+    public UI(ProductsPriceService productsPriceService, DiscountsService discountsService, ProductRecommendationService productRecommendationService, DailyShoppingBasketService dailyShoppingBasketService){
         this.productsPriceService = productsPriceService;
         this.discountsService = discountsService;
         this.productRecommendationService = productRecommendationService;
-        this.priceAlertService = priceAlertService;
+        this.dailyShoppingBasketService = dailyShoppingBasketService;
 
         this.scanner = new Scanner(System.in);
     }
@@ -51,14 +49,13 @@ public class UI {
 
     private void printMenu(){
         System.out.println("---------------------------< MENU >---------------------------");
-        System.out.println("1. Get optimized shopping list");
-        System.out.println("2. Get list of products with highest discounts across all tracked stores");
+        System.out.println("1. Get optimized shopping list (including only currently available discounts)");
+        System.out.println("2. Get list of products with highest discounts across all tracked stores (only those currently available)");
         System.out.println("3. Find discounts newly announced / posted (today)");
         System.out.println("4. Get price history data points for given product name (filterable data)");
         System.out.println("5. See recommended products (product name, category) considering available discount and value / unit");
-        System.out.println("6. Set target price alert for product name");
-        System.out.println("7. See all tracked products");
-        System.out.println("8. See all discounts / all available discounts");
+        System.out.println("6. See all tracked products");
+        System.out.println("7. See all discounts / all available discounts");
         System.out.println("0. Exit");
         System.out.println("Choose one of the options above (input example: 1)");
         System.out.println("--------------------------------------------------------------");
@@ -68,16 +65,6 @@ public class UI {
         System.out.println("--------------------------------------------------------------");
         System.out.println("1. See all discounts");
         System.out.println("2. See all currently available discounts");
-        System.out.println("0. Exit this submenu");
-        System.out.println("Choose one of the options above (input example: 1)");
-        System.out.println("--------------------------------------------------------------");
-    }
-
-    private void printPriceAlertsMenu(){
-        System.out.println("--------------------------------------------------------------");
-        System.out.println("1. See all alerts");
-        System.out.println("2. Add new alert for product (by product name)");
-        System.out.println("3. Delete alert for product (by product name)");
         System.out.println("0. Exit this submenu");
         System.out.println("Choose one of the options above (input example: 1)");
         System.out.println("--------------------------------------------------------------");
@@ -106,32 +93,6 @@ public class UI {
         }
     }
 
-    private void runPriceAlertsMenu() {
-        String option;
-
-        while (true) {
-            printPriceAlertsMenu();
-            System.out.print("option: ");
-            option = this.scanner.nextLine();
-
-            switch (option) {
-                case "1":
-                    //viewAllAlerts();
-                    break;
-                case "2":
-                    //addNewPriceAlert();
-                    break;
-                case "3":
-                    //deletePriceAlert();
-                    break;
-                case "0":
-                    return;
-                default:
-                    System.out.println("Invalid option: please enter 0, 1, or 2.");
-            }
-        }
-    }
-
     public void runMenu(){
         Scanner scanner = new Scanner(System.in);
         String option;
@@ -143,7 +104,7 @@ public class UI {
 
             switch(option){
                 case "1":
-                    System.out.println("optim shop list");
+                    createProductsBasket();
                     break;
 
                 case "2":
@@ -163,14 +124,10 @@ public class UI {
                     break;
 
                 case "6":
-                    runPriceAlertsMenu();
-                    break;
-
-                case "7":
                     viewAllRegisteredProducts();
                     break;
 
-                case "8":
+                case "7":
                     runViewDiscountsMenu();
                     break;
 
@@ -185,88 +142,68 @@ public class UI {
         }
     }
 
-    private void addNewPriceAlert(){
-        String productName = "";
-        double targetPrice = -1;
+    private void createProductsBasket(){
+        List<String> productNames = new ArrayList<>();
+        System.out.println("Enter product names to add to you shopping basket (type '0' when you are done");
 
-        System.out.println("product name: ");
-        productName = this.scanner.nextLine();
-
-        while(productName.equals(""))
+        while(true)
         {
-            System.out.println("product name: ");
-            productName = this.scanner.nextLine();
-        }
+            System.out.println("product name:");
+            String input = this.scanner.nextLine().trim();
 
-        while (true) {
-            System.out.print("Target price: ");
-            String priceInput = this.scanner.nextLine().trim();
+            if(input.equals("0"))
+            {
+                break;
+            }
 
-            try {
-                targetPrice = Double.parseDouble(priceInput);
-                if (targetPrice <= 0) {
-                    System.out.println("Price must be greater than 0. Try again.");
-                } else {
-                    break;
-                }
-            } catch (NumberFormatException e) {
-                System.out.println("Invalid number format. Please enter a numeric value.");
+            if(!input.isEmpty())
+            {
+                productNames.add(input);
+            }
+            else{
+                System.out.println("Product name can't be empty");
             }
         }
-        if(!this.priceAlertService.addPriceAlert(productName, targetPrice))
-        {
-            System.out.println("Price alert couldn't be added for the product with the given name");
+
+        System.out.println("You’ve added the following products to your basket:");
+        for (String name : productNames) {
+            System.out.print(" , " + name);
         }
+
+        List<PriceEntry> priceEntries = this.productsPriceService.getAllPriceEntries();
+        List<ProductPriceWithDiscountInfo> productPricesWithDiscountInfo = productRecommendationService.getPriceInfoWithDiscounts(priceEntries);
+        Map<String, List<ProductPriceWithDiscountInfo>> optimizedBasketForSavings = this.dailyShoppingBasketService.optimizeBasketForSavings(productNames, productPricesWithDiscountInfo);
+
+        viewOptimizedShoppingLists(optimizedBasketForSavings);
     }
 
-    private void deletePriceAlert(){
-        String productName = "";
+    private void viewOptimizedShoppingLists(Map<String, List<ProductPriceWithDiscountInfo>> optimizedBasketForSavings)
+    {
+        System.out.println("Optimized Shopping Basket (grouped by store):");
+        for (Map.Entry<String, List<ProductPriceWithDiscountInfo>> entry : optimizedBasketForSavings.entrySet()) {
+            String store = entry.getKey();
+            List<ProductPriceWithDiscountInfo> products = entry.getValue();
 
-        System.out.println("product name: ");
-        productName = this.scanner.nextLine();
-
-        while(productName.equals(""))
-        {
-            System.out.println("product name: ");
-            productName = this.scanner.nextLine();
-        }
-
-        if (this.priceAlertService.deleteAlert(productName)) {
-            System.out.println("Alert removed for product: " + productName);
-        } else {
-            System.out.println("No alert found for product: " + productName);
-        }
-    }
-
-    private void viewAllAlerts(){
-        List<PriceAlert> priceAlerts = this.priceAlertService.getAllAlerts();
-        if (priceAlerts.isEmpty()) {
-            System.out.println("No alerts found");
-            return;
-        }
-
-        for (PriceAlert alert : priceAlerts) {
-            List<PriceEntry> priceEntries = productsPriceService.getAllPriceEntriesByName(alert.getProductName());
-            double currentPrice;
-            for(PriceEntry priceEntry : priceEntries){
-                currentPrice = priceEntry.getPrice();
-
-                System.out.println("Product: " + priceEntry.getProduct().getId() +
-                        ", Name: " + priceEntry.getProduct().getName());
-                System.out.println("Current price: " + currentPrice);
-                System.out.println("Target price: " + alert.getTargetPrice());
-                System.out.println("-----------------------------");
+            System.out.println("Store: " + store);
+            for (ProductPriceWithDiscountInfo product : products) {
+                System.out.println(" - Product: " + product.getProductName());
+                System.out.println("   Original Price: " + product.getOriginalPrice() + " " + product.getCurrency());
+                if (product.getDiscountPercentage() != 0) {
+                    System.out.println("   Discount: " + product.getDiscountPercentage() + "%");
+                    System.out.println("   Discounted Price: " + product.getFinalPrice() + " " + product.getCurrency());
+                } else {
+                    System.out.println("   No discount available.");
+                }
+                System.out.println();
             }
         }
     }
 
     private void viewRecommendedProductsConsideringValuePerUnitAndDiscount(){
-        String productName = "", productCategory = "";
-
         System.out.println("product name: ");
-        productName = this.scanner.nextLine();
+        String productName = this.scanner.nextLine();
         System.out.println("product category: ");
-        productCategory = this.scanner.nextLine();
+        String productCategory = this.scanner.nextLine();
 
         List<PriceEntry> priceEntriesNameAndCategory = this.productsPriceService.getPriceEntriesByProductNameAndCategory(productName, productCategory);
         List<ProductPriceWithDiscountInfo> results = productRecommendationService.getPriceInfoWithDiscounts(priceEntriesNameAndCategory);
@@ -275,6 +212,7 @@ public class UI {
 
         for (ProductPriceWithDiscountInfo productInfo : results) {
             System.out.println("Product ID: " + productInfo.getProductId());
+            System.out.println("In Store: " + productInfo.getStore());
             System.out.println("Original price: " + productInfo.getOriginalPrice() + " " + productInfo.getCurrency());
 
             if (productInfo.getDiscountPercentage() != 0) {
@@ -299,12 +237,10 @@ public class UI {
                 System.out.println("Could not calculate price per unit: " + e.getMessage());
             }
         }
-        System.out.println("-----------");
-        System.out.println("Sorted products by lowest price per unit:");
-
         List<ProductPriceWithDiscountInfo> sortedResults = productRecommendationService.sortByPricePerUnit(results);
 
-        System.out.println("Recommended Products (best value first):");
+        System.out.println("-----------");
+        System.out.println("Sorted products by lowest price per unit, recommended products (best value first):");
 
         for (ProductPriceWithDiscountInfo product : sortedResults) {
             System.out.println(product.toString());
@@ -312,20 +248,20 @@ public class UI {
     }
 
     private void viewPriceHistoryForProduct(){
-        String productName = "";
-
         System.out.println("product name: ");
-        productName = this.scanner.nextLine();
+        String productName = this.scanner.nextLine();
 
-        while(productName.equals("")){
-            productName = this.scanner.nextLine();
+        if (productName.isEmpty()) {
+            do {
+                productName = this.scanner.nextLine();
+            } while (productName.isEmpty());
         }
 
         List<PriceEntry> productsWithGivenName = productsPriceService.getAllPriceEntriesByName(productName);
         List<PriceEntry> sortedEntries = productsPriceService.getSortedPriceEntriesByStoreAndDate(productsWithGivenName);
 
         for(PriceEntry priceEntry : sortedEntries){
-            System.out.println(String.format("Product name: %s, Store: %s, Date: %s ", productName, priceEntry.getStore(), priceEntry.getDate()));
+            System.out.printf("Product name: %s, Store: %s, Date: %s %n", productName, priceEntry.getStore(), priceEntry.getDate());
         }
     }
 
@@ -342,28 +278,28 @@ public class UI {
 
     private void viewAllDiscounts(){
         for(Discount discount : this.discountsService.getAllDiscounts()){
-            System.out.println(discount.toString());
+            System.out.println(discount.toString() + " at product " + discount.getProduct().getName());
         }
     }
 
     private void viewAllDiscountsAddedToday(){
         for(Discount discount : this.discountsService.getAllDiscountsAddedToday())
         {
-            System.out.println(String.format("Product: %s, %s", discount.getProduct().toString(), discount.toString()));
+            System.out.printf("Product: %s, %s%n", discount.getProduct().toString(), discount);
         }
     }
 
     private void viewAllAvailableDiscounts(){
         for(Discount discount : this.discountsService.getAllFilteredDiscountsByAvailability())
         {
-            System.out.println(String.format("Product: %s, %s", discount.getProduct().toString(), discount.toString()));
+            System.out.printf("Product: %s, %s%n", discount.getProduct().toString(), discount);
         }
     }
 
     private void viewHighestAvailableDiscounts(){
         for(Discount discount : this.discountsService.getHighestDiscountPercentageForEachStore())
         {
-            System.out.println(String.format("Product: %s, %s", discount.getProduct().toString(), discount.toString()));
+            System.out.printf("Product: %s, %s%n", discount.getProduct().toString(), discount);
         }
     }
 }

@@ -8,18 +8,11 @@ public class UnitPriceCalculator {
 
         String normalized = unit.toLowerCase();
 
-        switch (normalized) {
-            case "l":
-            case "kg":
-            case "buc":
-            case "role":
-                return price / quantity;
-            case "g":
-                return price / (quantity / 1000.0); // g to kg
-            case "ml":
-                return price / (quantity / 1000.0); // ml to l
-            default:
-                return -1;
-        }
+        return switch (normalized) {
+            case "l", "kg", "buc", "role" -> price / quantity;
+            case "g" -> price / (quantity / 1000.0); // g to kg
+            case "ml" -> price / (quantity / 1000.0); // ml to l
+            default -> -1;
+        };
     }
 }
