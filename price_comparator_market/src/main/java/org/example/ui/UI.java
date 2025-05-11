@@ -212,6 +212,7 @@ public class UI {
 
         for (ProductPriceWithDiscountInfo productInfo : results) {
             System.out.println("Product ID: " + productInfo.getProductId());
+            System.out.println("name: " + productInfo.getProductName());
             System.out.println("In Store: " + productInfo.getStore());
             System.out.println("Original price: " + productInfo.getOriginalPrice() + " " + productInfo.getCurrency());
 
